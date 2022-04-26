@@ -1,0 +1,9 @@
+1) SELECT p.nm_proprietario, v.nm_veiculo FROM PROPRIETARIO p, VEICULO v
+WHERE p.cd_cpf_proprietario = v.cd_cpf_proprietario;
+
+2)
+SELECT p.cd_cpf_proprietario, v.nm_marca, l.dt_licenciamento FROM
+proprietario p, veiculo v, licenciamento l 
+WHERE p.cd_cpf_proprietario = v.cd_cpf_proprietario AND
+v.cd_placa_veiculo = l.cd_placa_veiculo;
+ 

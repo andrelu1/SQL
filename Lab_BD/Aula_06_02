@@ -1,0 +1,154 @@
+-- VIEW
+-- COnsultas predefinidas que podem ter uma ou mais tabelas(base)
+-- Pode ser:
+-- Simples: Permite os comandos DML(INSERT, UPDATE, DELETE) desde que tenha todas as colunas obrigatorias.
+-- Complexas:
+
+-- Criar uma view chamada view_dept que tenha o id e o nome do depto.
+CREATE VIEW viet_dept(id,nome)
+AS 
+SELECT department_id,department_nome FROM departments;
+
+-- Visualizar a estrutura da tabela/view DESC ou DESCRIBE
+
+-- Podemos fazer consultas...
+-- Exibir o nome dos departamentos que iniciam com a letra C
+SELECT nome "Depto" FROM view_dept WHERE nome Like 'C%';
+
+-- Inserir um registro utilizando a view:INSERT INTO 
+INSERT INTO view_depto VALUES (290,'Desenvolvimento');
+
+--Exibir o registro inserido
+SELECT * FROM view_dept WHERE id = 290;
+
+-- Consultar no dicionario de dados as views existentes do usuario logado
+DESC USER_VIEWS
+
+-- Exibir informações da view criada: USER_VIEWS
+SELECT VIEW_NAME, TEXT FROM USER_VIEWS WHERE VIEW_NAME='VIEW_DEPT';
+VIEW_NAME
+
+-- VIEWS existentes no usuario logado: USER_OBJECTS
+SELECT OBJECT_NAME, OBJECT_TYPE
+FROM USER_OBJECTS
+WHERE OBJECT_TYPE = 'VIEW';
+
+VIEW_DEPT
+SELECT departament_id, departament_name FROM departaments;
+
+-- Alterar a view_dept para que seja somente de leitura 
+CREATE OR REPLACE VIEW view_dept
+AS
+SELECT department_id id, department_name name 
+FROM departaments
+WITH READY ONLY;
+
+VIEW CRIADA
+-- Testar...não permitir inserir:
+INSERT INTO view_dept VALUES (300, 'LAB 1');
+
+-- Excluir a view criada: DROP VIEW
+DROP view view_dept;
+
+-- Complexa: Funções: JOIN, Subquerie, operadores set 
+-- CRIAR uma view chamada vw_resumo que tenha o nome do depto., a qtde de empregados
+-- e a soma salarial.
+CREATE OR REPLACE view vw_resumo(depto, qtde, soma)
+AS
+SELECT d.departament_name, COUNT(e.employee_id), SUM(e.salary) 
+FROM departament_id = d.departament_id
+GROUP BY d.departament_name;
+CREATE OR REPLACE vw_resumo(depto, qtde, soma)
+
+ERRO na linha 1
+
+-- Exercicio 
+-- Exibir a estrutura da vw_resumo
+-- Exibir todos os regsitros do vw_resumo
+
+DESC vw_resumo;
+
+SELECT * FROM vw_resumo;
+
+-- Exibir o salario com mascara somente qdo a quantidade de empregados for
+-- maior que o S
+SELECT depto, TO_CHAR(soma,'000,000.00') FROM vw_resumo
+WHERE qtde > 5
+ORDER BY depto;
+
+-- Utilizando a user_views exibir a coluna text da vw_resumo.
+SELECT TEXT FROM user_views WHERE view_name = 'VW_RESUMO';
+
+SELECT d.departament_name, COUNT(e.employee_id), SUM(e.salary) FROM departments;
+
+-- Para exibir todo o código, aumentar a saida da coluna:
+SET LONG 1000
+SELECT TEXT FROM user_views WHERE view_name = 'VW_RESUMO';
+TEXT
+
+SELECT d.departament_name, COUNT(e.employee_id),SUM(e.salary)
+FROM departaments d, employees e
+WHERE e.departament_id = d.departament_id
+GROUP BY d.departament_name;
+
+-- VIEW DA LINHA: SUBQUERIE NA CLAUSULA FROM
+-- Exibir o nome do empregado, o salario, o id do depto e o maior salario do depto, em que o empregado
+-- esta alocado. Exibir somente os empregados que ganham menos que o maior salario do seu depto.
+SELECT e.first_name, e.salary, e.departmente_id, b.maior
+FROM employees e,
+(SELECT departament_id, MAX(salary) maior 
+FROM employees 
+GROUP BY departament_id) b
+WHERE e.departament_id = b.departament_id
+AND e.salary < b.maior;
+
+-- ANALISE TOP-N (ROWNUM)
+-- Objetivo: Exibir o n(numero) maiores e menores
+-- ROWNUM exibe a identificação fisica da linha de uma consulta
+-- Exibir o sobrenome e o salario dos 5 emregados mais bem pagos
+SELECT ROWNUM, last_name, salary
+FROM (SELECT last_name, salary
+      FROM employees 
+      ORDER BY salary DESC)
+WHERE ROWNUM <=5;
+
+-- Exercicio)
+-- Utilizando o edit alterar para que seja criado uma view chamada vw_ranking.
+-- Edit é abrir o editor de texto.
+CREATE OR REPLACE VIEW vw_ranking
+FROM (SELECT last_name,salary 
+      FROM employees
+      ORDER BY SALARY DESC)
+WHERE ROWNUM <=5;
+
+-- WITH CHEK OPTION: Executa verificações de integridade referencial(restrições)
+-- Criar uma view chamada vwemp30 que tenha todas as informações dos empregados do depto, com id 30;
+-- Verificar integridade referencial
+-- Criou uma chave em view.(Ultima linha)
+
+CREATE OR REPLACE VIEW vwemp30
+AS 
+SELECT * FROM employees
+WHERE departament_id = 30
+WITH CHECK OPTION CONSTRAINT empvu30_ck;
+
+VIEW CRIADA
+
+-- Exibir todos os registros
+SELECT * FROM vwemp30
+
+-- Utilizando a view tentar inserir um novo registro no depto. 10
+
+INSERT INTO vwemp30
+VALUES (666,NULL, 'FLORES', 'flores@fatecpg.com' , NULL, SYSDARE, 'IT_PROG', null, null null, 10);
+
+INSERT INTO vwemp30
+ERRO
+
+INSERT INTO vwemp30
+VALUES (666,NULL, 'FLORES','flores@fatecpg.com',NULL, SYSDATE, 'IT_PROG', null, null,null, 30);
+
+1 Linha Criada
+
+SPOOL OFF
+ 

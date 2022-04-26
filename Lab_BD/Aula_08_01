@@ -1,0 +1,23 @@
+L
+Declare 
+v_depto INTEGR := &depto;
+v_soma NUMBER(8,2);
+v_qtde NUMBER(3);
+v_media NUMBER(8,2);
+
+BEGIN
+ SELECT AVG(salary), COUNT(*), SUM(salary)
+ INTO v_media,v_qtde, v_soma
+ FROM employees
+WHere departament_id = v_depto;
+----Estrutura Condicional 
+  IF v_depto = 10 OR v_depto = 30 THEN
+ DBMS_OUTPUT.PUT_LINE('Soma salarial '|| v_soma);
+ELSIF v_depto = 40 or v_depto=60 THEN
+DBMS_OUTPUT.PUT_Line('Media salarial ' || v_media);
+ELSE 
+DBMS_OUTPUT.PUT_LINE('Qtde de empregados '|| v_qtde);
+END IF;
+END;
+
+ALTERAR 

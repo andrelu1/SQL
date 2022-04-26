@@ -1,0 +1,125 @@
+                                               Manipulação Avançada
+
+-- Manipulação de dados avançados(INSERT)
+-- Criar as seguintes tabelas auxiliares com base na tabela EMPLOYEES:
+-- CREATE table mgr_history (empid, mgr, sal)
+   as
+   SELECT employee_id,manager_id, salary FROM employees;
+
+-- Excluir todos os registros da tabela criada
+TRUNCATE TABLE mgr_history
+
+Tabela Truncada
+
+--Criar a tabela SAL_HISTORY com as colunas empid, hiredate e sal
+--Com base na tabela EMPLOYEES, Em seguida...Truncar a tabela SAL_History
+
+-----------------------
+
+-- Insert ALL
+-- É possivel ingerir registros com até 127 clausulas distintas.
+-- a) Incondicional
+-- Selecionar os dados do empregado e inserir nas tabelas somente quando o id for maior que 200.
+-- OBS: Employees (employee_id, hire_date, manager_id)
+
+Insert ALL
+INTO sal_history VALUES (empid, hiredate, sal)
+INTO mgr_history VALUES (empid, mgr, sal)
+SELECT employee_id empid, hire_date hiredate, manager_id mgr, salary sal
+FROM employee.
+
+INSERT 
+INTO sal_history VALUES (empid, hiredate, sal)
+INTO mgr_history VALUES (empid, mgr, sal)
+SELECT employee_id empid, hire_date hiredate, manager_id mgr, salary sal
+FROM employees
+WHERE employee_id > 200
+
+-- Excluir registros das tabelas: sal e mgr
+TRUNCATE TABLE mgr_history;
+
+Tabela Truncada
+
+Truncate TABLE sal_history;
+
+-- B) Condicional 
+-- Alterar a insercao para que insira na tabela SAL_HISTORY somente qdo o salario for maior ou igual a 10000.
+-- E se o id do gerente for maior que 200, inserir na tabela MGR_HISTORY
+
+INSERT ALL
+WHEN sal >= 10000 THEN
+INTO sal_history VALUES (empid, hiredate, sal)
+WHEN mgr > 200 THEN
+INTO mgr_history VALUES (empid, mgr,sal)
+SELECT employee_id empid, hire_date hiredate, manager_id mgr, salary sal
+FROM employees
+WHERE employee_id > 200
+
+-- Excluir mgr_history e sal_history: DROP TABLE
+DROP TABLE mgr_history
+
+-- Criar uma tabela COPY_EMP com base na tabela EMPLOYEES
+-- Visualizar a estrutura
+-- Excluir da tabela COPY_EMP os empregados que ganham entre 10000 e 15000
+-- Na tabela COPY_EMP dar aumento de 50% aos programadores de TI(IT_PROG)
+
+-- Comando MERGE: Insere registros que estejam faltando e atualiza valores
+-- Com base na tabela ORIGEM(insert e update juntos)
+
+CREATE TABLE copy_emp AS SELECT * FROM employees;
+
+-- DESC copy_emp
+DELETE FROM copy_emp WHERE salary BETWEEN 10000 and 15000;
+
+UPDATE copy_emp SET salary = salary * 1.50 WHERE job_id = 'IT_PROG';
+
+COMMIT
+
+-- Inserir/Atualizar os registros de COPY_EMP para que fiquem iguais a EMPLOYEES
+
+--(TABELA DESTINO, MERGE é feito nela)
+MERGE INTO copy_emp C
+USING employee e 
+ON (c, employee_id = e.employee_id)
+WHEN MATCHED THEN
+UPDATE SET
+c.first_name = e.first_name,
+c.last_name = e.last_name,
+c.email = e.email,
+c.phone_number = e.phone_number,
+c.job_id = e.job_id,
+c.salary = e.salary,
+c.comission_pct = e.comission_pct,
+c.manager_id = e.manager_id,
+c.department_id = e.department_id
+WHEN NOT MATCHED THEN
+INSERT VALUES (e.first_name, e.last_name,e.email,e.phone_number,e.job_id, e.salary,
+e.comission_pct, e.manager_id,  e.department_id);
+
+-- INSERT into criacao de pivo
+-- Cada registro de uma tabela BD não relacional sera convertida em uma tabela
+
+-- BD Relacional 
+-- Create table sales_info
+   (employee_id NUMBER(6), week NUMBER (2), sales NUMBER(10,2));
+
+CREATE TABLE sales_source
+(employee_id NUMBEE(6),
+segunda NUMBER(10,2),
+terca NUMBER(10,2),
+quarta NUMBER(10,2),
+quinta NUMBER(10,2),
+sexta NUMBER(10,2));
+
+INSERT INTO sales_source
+VALUES (176, 2000, 3000, 4000,5000, 60000);
+
+INSERT ALL 
+INTO sales_info VALUES (employee_id, 2, segunda)
+INTO sales_info VALUES (employee_id, 2, terca)
+INTO sales_info VALUES (employee_id, 2, quarta)
+INTO sales_info VALUES (employee_id, 2, quinta)
+INTO sales_info VALUES (employee_id, 2, sexta)
+
+SELECT employee_id, 2, segunda,teca,quarta, quinta, sexta 
+FROM sales_source;

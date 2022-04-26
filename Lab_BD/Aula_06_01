@@ -1,0 +1,89 @@
+Selec * FROM ALL_SYNONYMS WHERE OWNER = 'HR';
+-- Excluir sinonimo EMP:
+DROP SYMONYM emp;
+Sinomimo Eliminado
+
+-- Sequence: Usado para gerar numeros exclusivos para chave primaria.
+-- Criar uma sequence chamada seq_dept que inicie em 1000 com incremento de 10 e valor maximo 10000,
+-- Sem valores na memoria cache.
+CREATE SEQUENCE seq_dept
+START WITH 1000
+INCREMENT BY 10
+MAXVALUE 10000
+NOCACHE;
+
+SEQUENCIA criada.
+-- Uma vez criada, podemos alterar TODAS as clausulas MENOS a START WITH
+-- Consultar no dicionario de dados as sequencias existentes no usuario logado
+SELECT * FROM user_sequences;
+
+-- Utilizando a sequencia criada. Inserir um registro na tabela.
+-- DEPARTAMENTS:
+INSERT INTO departaments (departament_id, '&nome_dept')
+2
+INSERT INTO departaments (departament_id, departament_name)
+VALUES (SEQ_DEPT,NEXTVAL, '&nome_dept');
+Informe o valor para nome_dept:Biblioteca
+NOVO: VALUES (SEQ_DEPT, NEXTVAL, 'Biblioteca');
+
+-- Consultar registros
+SAVE SEQ_DEPT.SQL
+
+-- Consultar o valor corrente da sequencia:
+SELECT SEQ_DEPT, CURRVAL FROM DUAL;
+
+-- Consultar os departamentos inseridos
+SELECT department_id, departament_name FROM departaments;
+
+-- Alterar o incremento para ser de 100 em 100
+ALTER SEQUENCE seq_dept 
+INCREMENT BY 100;
+
+SEQUENCIA ALTERADA
+
+--Executar o script salvo para inserir um novo registro 
+--START registro
+INFORME o valor para o nome_dept: PORTARIA
+antigo 2: VALUES(SEQ_DEPT.NEXTVAL, '&nome_dept')
+novo 2: VALUES(SEQ_DEPT.NEXTVAL, 'PORTARIA')
+
+SELECT department_id, departament_name FROM departments;
+
+-- Excluir o registro 1010
+DELETE FROM departments WHERE department_id = 1010;
+1 linha deletada
+
+SELECT department_id, departament_name FROM departments;
+
+--Linhas selecionadas.
+--Excluir toda a sequencia criada
+DROP SEQUENCE seq_dept;
+
+Sequencia eliminada
+
+-- Indice: Objeto criado indexado pela coluna informada
+-- Ha dois tipos: BITMA(DW) E ARVORE (B-TREE (mais comum).
+-- B_TREE
+-- Criar um indice chamado IDX_DEPT_NOME para a coluna.
+-- department_name da tabela DEPARTAMENTS;
+
+-- Indice criado
+
+-- Consultar indices criados:
+-- Todos os indices do usuario logado: USER_INDEXES
+-- Indices e as colunas que possuem indice: USER_IND_COLUMNS
+SELECT index_name, column_name, table_name
+FROM user_ind_columns;
+
+-- Criar uma consulta que exiba o nome de todos os deptos
+-- que possuem uma letra a minuscula em seu nome:
+
+SELECT department_name FROM deparmants 
+WHERE departament_name LIKE '%a%';
+
+-- VIEW: Tabela virtual (consulta predefinida).
+-- Pode ser simples ou complexa.
+-- SIMPLES: Permite operacoes DML desde que tenha as colunas
+-- NOT NULL e CHAVE PRIMARIA
+-- COMPLEXA: não permite operacoes DML. Pode ser OPERADOR SET, JOIN, SUBQUERIE
+-- OBS: É possivel ter uma view simples somente de leitura.

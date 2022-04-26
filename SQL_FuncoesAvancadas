@@ -1,0 +1,25 @@
+--Funções DE GRUPO AVANÇADAS
+--EXIBIR O ID DO DEPTO, a soma salarial dos empregados(sum)
+-- dos deptos com id menores que 40, quando a soma salarial for maior ou igual a 15000
+--maior que 5, ordenado pelo id do depto.
+select department_id, SUM(salary) 
+from hr.employees where department_id < 40 group by department_id having sum(salary) >= 15000
+order by department_id;
+
+-- Exibir os salarios totais de todos os cargos dos deptos com id menores que 60:
+select department_id, job_id, SUM(salary) from hr.employees 
+where department_id < 60 
+group by department_id, job_id
+order by department_id, job_id;
+
+SUbtotais: Departamento
+
+select department_id, job_id, SUM(salary) from hr.employees
+where department_id < 60
+group by rollup (department_id, job_id);
+
+Subtotais Departamento e Job
+-- Cube
+select department_id, job_id, SUM(salary) from hr.employees
+where department_id < 60
+group by cube (department_id, job_id);

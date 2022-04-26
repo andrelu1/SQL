@@ -1,0 +1,45 @@
+-- Limpar a tela clear screen
+-- Clear Screen
+-- Operadores de conjunto: UNION, UNION ALL, INTERSECT e MINUS
+-- Tabelas: Employees, Departments, Jobs, Job_HIstory.
+-- Exibir o id do empregado e do cargo atual e anterior
+-- A) Excluir registros duplicados.
+-- Union exibe excluindo os registros iguais
+SELECT employee_id "ID", job_id "cargo" FROM employees
+2 UNION
+3 SELECT employee_id, job_id FROM job_history
+4 ORDER BY employee_id;
+4 ORDER BY 1;
+
+-- Repetir o ultimo comando digitado: List ou L;
+-- Executar novamente o comando: /
+-- Aumentar o tamanho de pagina para 200 linhas
+SET PAGESIZE 200;
+
+--Alterar para exibir tambémos registros duplicados: UNION ALL
+--Abrir o ultimo comando SQL executado para edição 
+EDIT
+-- Abre o editor de texto
+
+SELECT employee_id "ID", job_id "Cargo", department_id FROM employees 
+UNION ALL
+SELECT employee_id,job_id, department_id from job_history
+Order by 1;
+
+-- Salvar o ultimo comando executado com script: SAVE
+Save /home/andre/AA.SQL
+
+-- Exibir os registros em comum(Iguais) nas duas tabelas.
+--Intersect
+EDIT
+
+SELECT employee_id "ID", job_id "Cargo" FROM employees INTERSECT select employee_id, job_id FROM job_history ORDER BY 1;
+
+--Exibir os empregados que nunca tiveram promoção ou mudaram de cargo
+--MINUS: exibe TODOS os registros da PRIMEIRA CONSULTA que não tem na segunda consulta.
+EDIT
+SELECT employee_id "ID", job_id "Cargo" FROM employees MINUS select employee_id, job_id FROM job_history ORDER BY 1;
+
+--Executaro script salvo: START ou @
+
+START /home/andre/UNION_ALL.sql

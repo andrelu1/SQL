@@ -1,0 +1,53 @@
+Select department_id from departmens 
+Where not exists (Select *from employees_id Where m_departaments_id = departaments.departaments_id))
+
+-- Exibir o nome, o id do cargo e o salario dos empregados que em o mesmo cargo do empregado com id 16.
+
+SELECT first_name, job_id, salary
+FROM employee
+WHERE job_id = (SELECT job_id FROM employees WHERE employee_id=167);
+
+--Recuperação Hierarquica
+--Exibe dados que representam hierarquia(organograma)
+/*Clausulas*/
+Start WITH identifica o inicio da hierarquia
+LEVEL Retorna um numero (inicia em 1) indica nivel da raiz
+CONNECT BY PRIOR - Join hierarquico
+
+--Exibir o id do empregado, o sobrenome, o id do cargo e do gerente
+--Mostrando a hierarquia  iniciando pelo empregado com id 101)
+
+SELECT employees_id, las_name, job_id, manager_id FROM employees 
+START WITH employee_id = 101 connect by prior;
+
+SELECT employees_id, las_name, job_id, manager_id FROM employees 
+START WITH employee_id = 101 connect by prior manager_id = manager_id; <- Inverte a ordem.
+
+-- Todos selecionados
+--Compactação de ramicações e eliminar um nivel hierarquico (level)
+
+SELECT employee_id, last_name, job_id, manager_id FROM employees 
+START WITH last_name = 'kochar'
+WHERE last_name = 'higgins' 
+CONNECT BY PRIOR employee_id = employee_id;
+
+--Excluir toda ramificação
+-- Alterar para exibir todos os registros excluindo a ramificação higgins e seus subordinados (205 e 2061)
+SELECT employee_id, last_name, job_id, manager_id FROM employees
+START WITH last_name  = konchar
+CONNECT BY PRIOR employee_id = manager_id
+AND last_name = "Wiggins";
+
+-- Exibir o sobrenome dos empegados em uma arvore hierarquica
+-- Funções
+-- Lenght (coluna) - qtde de caracteres 
+-- LPAD(Coluna, tamanho desejado, caracteres) = aLinha a direita e preenche a esquerda com o caracters informados.
+
+SELECT LPAD (last_name,LENGHT(last_name)+(LEVEL*2)-2,'-')"Arvore"
+FROM employees
+START WITH last_name='king'
+CONNECT BY PRIOR employee_id = manager_id;
+
+-- Usando join(auto relacionamento )da tabela employees com dois apelidos diferentes
+-- criar uma consulta que exiba o sobrenome do gerente e o nome do subordinado  
+ 

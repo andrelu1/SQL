@@ -1,0 +1,106 @@
+-- Junções(JOIN) de tabela.
+-- União de duas ou mais tabelas, normalmente aravés de chaves primárias e estrangeiras.
+-- À ausencia da junção, fará ue ocorra um produto cartesiano, onde relaciona a quantidd de registros de uma tabela.
+-- Há dois tipos; ANSI-99 e PAtenteadas ORACLE, OBS: INNER JOIN(ANSI-92)
+--A)Exibir a qtde de registros
+select count(*) from hr.employees;
+select count(*) from hr.departments;
+select count(*) from hr.locations;
+select count(*) from hr.countries;
+
+--PRODUTO CARTESIANO: ausencia ou erro na junção
+-- Exibir o nome do depertamento e o nome do empregado
+--A) ORACLE
+select department_name, first_name FROM hr.employees, hr.departments;
+
+--B) ANSI-99
+select department_name, first_name FROM hr.employees cross join hr.departments;
+
+-- Chaves
+--Exibir o nome do pais (countries - country_name, o id (country_id) e a cidade (city) da localização:
+select country_name, city from hr.locations cross join hr.countries;
+
+--B)EQUIJOIN (Juncao identica (chave primaria com a chave estrangeira)
+--Exibir o nome do pais, a identificação do pais e a cidade:
+
+--B.1)Oracle
+--B.1.1)Colocando o nome da tabela
+select countries.country_name, countries.country_id, locations.city
+from hr.locations, hr.countries
+WHERE locations.country_id = countries.country_id;
+
+--b.1.2)Colocando alias (apelido) nas colunas (buscar os apelidos colocados na tabela)
+SELECT c.country_name, c.country_id, l.city
+FROM HR.locations l, HR.countries c
+WHERE l.country_id = c.country_id;
+
+
+--b.2)ANSI 99 (também é possivel usar alias ou nome de tabela)
+--b.2.1) NATURAL JOIN (o banco de dados busca as colunas de chave primaria e chave estrangeira)
+select country_name, country_id, city from hr.locations natural join hr.countries;
+
+
+--B.2.2) ON (usado quando a condição de juncao possui grafia diferente entre as colunas)
+select c.country_name, c.country_id, l.city from hr.locations l join hr.countries c on (l.country_id = c.country_id);
+
+-- ON deixa claro qual é a função.
+
+--b.2.3) USING (usado quando a condição de juncao possui MESMA grafia)
+select country_name, country_id, city from hr.locations join hr.countries using  (country_id);
+
+-- c)NoEquiJoin (juncao nao identica)
+-- Exibir o nome do empregado, o titulo do cargo, o salario e a faixa salarial
+-- Não identica / Apresenta faixa de valores.
+select e.first_name, j.job_title, e.salary, j.min_salary, j.max_salary from hr.employees e, hr.jobs j where e.job_id = j.job_id and e.salary between j.min_salary and j.max_salary;
+
+
+-- Nome/Sobrenome e Gerente / ID de que é subordinado do empreado e do gerente na empresa.
+
+SELECT e.last_name||' trabalha para '||g.last_name, e.manager_id, g.employee_id
+FROM hr.employees e, hr.employees g
+WHERE e.manager_id = g.employee_id;
+
+-- Nome/Sobrenome e Gerente / ID de que é subordinado do empreado e do gerente na empresa.
+select e.last_name ||'trabalha para'||, g.last_name, e.employee_id "empregado", e.manager_id "gerente do empregado", g.employee_id "id do gerente do funcionario" from hr.employees e, hr.employees g
+where e.manager_id = g.employee_id;
+-- ANSI
+SELECT e.last_name||' trabalha para '||g.last_name, e.manager_id, g.employee_id
+FROM hr.employees e, hr.employees g
+WHERE e.manager_id = g.employee_id;
+
+--e)OUTER JOIN (JUNCAO EXTERNA)
+--e.1)Oracle (+) no lado da informação ausente
+--Exibir o id e o sobrenome do empregado, o id e o nome do departamento:
+--e.1.1) Todos os departamentos que nao tem funcionario DEVERÃO SER EXIBIDOS
+select e.employee_id, e.last_name, d.department_id, d.department_name
+from hr.employees e, hr.departments d 
+where e.department_id(+) = d.department_id;
+
+--e.1.2)Todos os empregados MESMO QUE NAO ESTEJAM alocados em algum departamento:
+select e.employee_id, e.last_name, d.department_id, d.department_name
+from hr.employees e, hr.departments d 
+where e.department_id = d.department_id(+);
+
+--e.2)ANSI 99
+--e.2.1)Exibir TODOS os empregados mesmo quem não tem id do depto.
+SELECT e.employee_id, e.last_name, d.department_id, d.department_name
+FROM hr.employees e LEFT OUTER JOIN hr.departments d
+ON (e.department_id = d.department_id);
+
+--e.2.2)Exibir TODOS os deptos. mesmo aqueles não tem empregado:
+SELECT e.employee_id, e.last_name, d.department_id, d.department_name
+FROM hr.employees e RIGHT OUTER JOIN hr.departments d
+ON (e.department_id = d.department_id);
+
+--e.2.3)Exibir TODOS os deptos. mesmo aqueles não tem empregado e também TODOS os empregados que não depto.
+SELECT e.employee_id, e.last_name, d.department_id, d.department_name
+FROM hr.employees e FULL OUTER JOIN hr.departments d
+ON (e.department_id = d.department_id);
+
+--Variacoes do que vimos ate agora...
+--Exibir informacoes entre tabelas que não possuem join direto
+--Exibir o nome do empregado e a cidade em que ele trabalha
+SELECT e.first_name, l.city
+FROM hr.employees e, hr.locations l, hr.departments d
+WHERE e.department_id = d.department_id
+AND d.location_id = l.location_id;

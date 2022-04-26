@@ -1,0 +1,173 @@
+-- Usuarios E Privilegios
+-- Exibir Usuario Logado
+SHOW USER
+U "SYS"
+-- Criar usuarios e grupos de usuarios somente como DBA: SYSTEM/SYS.
+-- Estrutura Fisica e Logida do Banco de Dados.
+-- Consultar arquivos:
+-- A) Dados
+SELECT * FROM V$DATAFILE; -- V$ é uma view dinamica(Diferente em cada pc)
+              _____
+             |Senha|                         -------
+                                            |       | -> Dados File: Só as informações
+           _________                        |       | -> Controle File: Tudo que foi feito no banco de dados.
+          |Parametro|                       |   BD  | -> Redolog File: 2 Aquivos de Log: Mostrando in live e o drive log
+                                            |_______|
+                                                |
+                                  --------------|------------
+                                  |             |            | 
+                              TableSpace     TableSpace  TableSpace
+                                System         Undo         SYS
+
+-- C) Redolog
+Select * FROM V$LOGFILE
+
+-- Consultar estrutura logica
+SELECT TABLESPACE_NAME FROM DBA_TABLESPACES;
+-- DBA Adminstracao bando de dados
+-- TableSpaces 
+
+-- Consultar o dicinario de dados: DICTIONARY
+DESC dictionary
+
+-- Buscar informações sobre usuários: ALL_USERS
+SELECT COMMENTS FROM DICTIONARY WHERE TABLE_NAME = 'ALL_USERS'
+
+-- Exibir todos os nomes de todos os usuarios existentes
+SELECT USERNAME FROM ALL_USERS;
+ 
+--Criar o usuario chamado aluno com senha aluno;
+
+CREATE USER aluno IDENTIFIED BY aluno;
+-- IDENTIFIED é a senha
+
+--Logar com o usuario criado
+CONNECT aluno/aluno;
+
+-- Ele não aparece conectado, precisa conectar
+
+--CONECTAR novamente como SYS
+CONNECT / as SYSDBA
+
+-- Privilerio de SISTEMA:  CREATE VIEW, CREATE TABLE, CREATE SEQUENCE, CREATE SYNONYMM CREATE SESSION(CONEXAO).
+-- OBS: NAO HA PRIVILEGIO CREATE INDEX(IMPLICITO NO CREATE TABLE).
+
+-- Conceder privilegio de conexao de usuario ALUNO
+GRANT create session To aluno;
+
+--SuperUSuario: CREATE ANY TABLE
+
+-- Conceder privilegio ao usuario aluno para consultar a tabela jobs.
+-- a) jobs HD
+CONNECT HR/HR
+CONECTADO
+-- B)Privilegios de select
+GRANT select ON jobs to aluno;
+
+-- Testar, logar como aluno e fazer um select
+CONNECT aluno/aluno
+CONNECTADO
+--Exibir todos os registros da tabela JOBS:
+--Não funciona SELECT * FROM JOBS;
+SELECT * FROM HR.jobs;
+
+-- Conceder privilegio de criar sinonimo para o aluno
+CONNECT / AS SYSDBA
+Conectado
+GRANT create synonym To aluno.
+
+Concessap bem-sucedida
+
+CONNECT aluno/aluno
+CONECTADO
+-- Criar um sinonimo jogs para HR.Jobs.
+CREATE SYNONYM jobs FOR hr.jobs;
+
+Sinonimo criado
+
+SELECT * FROM jobs;
+
+-- CRIAR um usuario com seu nome e a senha e o seu nome.
+-- Que na primeira conexao, solicite a troca de senha e tenha uma cota de espaco ilimitada na tablespace SYSTEM.
+
+CONNECTED / AS SYSDBA
+
+CREATE USER simone IDENTIFIED BY simone
+PASSWORD EXPIRE
+DEFAULT TABLESPACE SYSTEM QUOTA UNLIMITED ON SYSTEM;
+
+USUARIO CRIADO
+
+-- Criar um grupo de usuarios chamado Tchurma
+
+CREATE ROLE tchurma
+
+-- Conceder ao grupo thcurma privilegio de sistema.
+GRAT TABLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE SESSION, CREATE VIEW TO tchurma;
+
+-- COlocar os usuarios aluno e o seu nome no grupo tchruma.
+
+GRANT tchurma TO aluno, simone;
+
+CONCESSAO bem-sucedida.
+
+-- Revogar o privilegio de criar sinonimos do usuario aluno
+
+REVOKE create synonym FROM aluno;
+
+REVOGACAO bem-sucedida.
+
+-- Criar tabela prod com cod integer primary key e nome varchar(30)
+CREATE TABLE prod (cod integer primary key, nome varchar (30));
+TABELA CRIADA
+
+-- Criar um indice idx_prod para a coluna nome de tabela prod.
+CREATE INDEX idx_prod ON prod(name);
+
+Indice Criado
+
+-- Criar a sequenci seq_prad que inicia em 10 com incremento 10
+CREATE SEQUENCE seq_prod START WITH ID INCREMENT BY 10;
+
+-- Criar um sinonimo chamado mercadoria para prod.
+CREATE SYNONYM mercadoria FOR prod;
+
+INSERT INTO mercadoria VALUES (seq_prod.NEXTVAL,'Caneta');
+LINHA CRIADA
+
+SELECT * FROM prod;
+
+COMMIT
+
+-- Conceder privilegio de select na tabela prod para aluno
+GRANT select ON prod TO aluno;
+
+CONNECT aluno/aluni
+SELECT * FROM sinome.prod;
+
+-- Somente quem criou ou deu o privilegio só ele pode revogar.
+-- Revogar o privilegio de select do usuario Aluno.
+CONNECT simone/romano
+REVOKE select ON prod FROM aluno;
+
+--Excluir o usuario aluno
+
+CONNECT / AS SYSDBA
+DROP USER aluno
+ERRO na linha 1
+CASCADE deve ser especificado para eliminar 'ALUNO
+DROP USER aluno cascade;
+
+DROP USER simone cascade;
+
+-- Excluir o grupo
+DROP ROLE tchurma;
+
+Atributo eliminado
+
+-- Consultas:
+-- Privilegios de sistema: USER_SYS_PRIVS
+-- Privilegios de Objeto: USER_TAB_PRIVS_MADE
+-- Privilegios de grupo: USER_ROLE_PRIVS
+-- Privilegios de grupo ao usuario: ROLE_TAB_PRIVS_MADE
+

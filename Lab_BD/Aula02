@@ -1,0 +1,65 @@
+--Produto cartesiano
+--Exibir o nome do departamento e a cidade da localização.
+--A) Oracle
+
+SELECT department_name, city FROM HR.departments, HR.locations;
+
+--B) Padrão ANSI
+
+SELECT department_name ,city FROM HR.departments CROSS JOIN HR.locations;
+
+-- Duas tabelas pequenas que precisam de um grande volume de dados especificos.
+
+-- C) EquiJoin (Chave primaria com chave estrangeira)
+
+SELECT d.department_name, l.city FROM HR.departments d, HR.locations l WHERE d.location_id = l.location_id;
+
+-- D) ANSI (Natural Join)
+
+SELECT d.department_name, l.city FROM HR.departments d NATURAL JOIN HR.locations l;
+
+-- E) ANSI(USING) Mesma grafia
+
+SELECT d.department_name, l.city FROM HR.departments d JOIN HR.locations l USING (location_id);
+
+-- F) ANSI(ON); grafia diferente
+
+SELECT d.department_name, l.city FROM HR.departments d JOIN HR.locations l ON (d.location_id = l.location_id);
+
+--OUTER JOIN: não há correspondencia
+-- G)ORACLE (+) NO LADO Direito da Coluna na junção que não há informação
+-- Está exibindo todas as cidades que não tem departamento.
+
+SELECT d.department_name, l.city FROM HR.departments d, HR.locations l WHERE d.location_id(+) = l.location_id;
+
+--h) ANSI: OUTER Left JOIN, OUTER FULL JOIN, OUTER RIGTH JOIN
+
+--H.1) - Trás o que está ausente no lado esquerdo da tabela
+
+SELECT department_name, city FROM HR.departments d OUTER LEFT JOIN HR.location l USING (location_id);
+
+--H.2)   
+
+SELECT department_name, city FROM HR.departments d OUTER FULL JOIN HR.location l USING (location_id);
+
+-- Exibir o nome do empregado, o titulo do cargo e o nome do departamento ea cidade que ele trabalha
+-- Em ordem alfabetica somentede quem trabalha nos departamentos com id de 10 a 40.
+-- Quantidade de joins geralmente é uma menor do que a tabela.
+
+SELECT e.first_name, j.tittle, d.departament_name, l.city  FROM HR.employes e, HR.jobs J, HR.departments d HR.locations l 
+WHERE d.department_id = e.department_id and e.job_id = j.job_id AND l.location_id = d.location_id 
+AND d.department_id d.department_id IN(10,20,30,40) ORDER BY 1;
+
+-- Alterar para exibir também os cargos que não tem funcionarios para que oissam ser contratados
+
+SELECT e.first_name, j.tittle, d.departament_name, l.city  FROM HR.employes e, HR.jobs J, HR.departments d HR.locations l
+WHERE d.department_id = e.department_id and e.job_id(+) = j.job_id AND l.location_id = d.location_id 
+AND d.department_id IN (10,20,30,40) ORDER BY 1; 
+
+-- Intervalo (BETWEEN)
+
+SELECT e.first_name, j.tittle, d.departament_name, l.city  FROM HR.employes e, HR.jobs J, HR.departments d HR.locations l
+WHERE d.department_id = e.department_id and e.job_id(+) = j.job_id AND l.location_id = d.location_id
+AND d.department_id BETWEEN 10 AND 40 ORDER BY 1; 
+
+

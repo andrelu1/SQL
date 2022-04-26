@@ -1,0 +1,140 @@
+                                                       POO em DBA
+/* Conceito de criar tipos de dados, herança, array e atributo composto. */
+-- Criar o objeto tipo pessoas com os atributos
+-- Nome e endereço que podera ser herdado por outros objetos.
+-- Cria tipos de objetos: CREATE TYPE.
+
+-- Conhecemos um só objeto: TABELAS -> Unico lugar que armazena registros. 
+
+-- Criar um tipo: Pessoas, Indices, Views, Sequencia, Sinonimos, PL/SQL(Varios).
+  
+-- CREATE TYPE pessoas
+   (cdpessoa INTEGER,
+    nmpessoa VARCHAR(60))
+    NOT FINAL;
+    /
+--  Podera ser herdado outros a partir dele.(SUPERCLASSE)
+
+Advertencia: Tipo criado com erros de compilação
+
+-- Exibir os erros
+-- SHOW ERRORS
+
+-- CREATE TYPE pessoas
+   (cdpessoa INTEGER,
+    nmpessoa VARCHAR(60))
+    NOT FINAL;
+    /
+TIPO CRIADO
+
+-- Estrutura do objeto: DESC
+DESC PESSOAS
+PESSOAS Não é FINAL
+
+--OBS: OBJECT NOT FINAL: Significa que sera uma super classe.
+--Um objeto não pode receber registros, somente TABLE.
+--Criar uma subclasse chamada Fisicas que herda a clase pessoas e tenha atributos como sexo e cpf
+CREATE TYPE fisicas UNDER pessoas
+(cdcpf NUMBER(11),
+sexo CHAR(1));
+/
+
+-- Exibir a estrutura: DESC fisicas
+
+--Exercicio: Criar o tipo juridica com cnpj NUMBER(14) e inscricao estadual CHAR(10) que herda caracteristicas
+--do tipo PESSOAS. Em seguida, exibir a estrutura.
+
+CREATE TYPE juridica UNDER pessoas.
+(cdcnpj NUMBER(14),
+inscricao_estadual CHAR(10));
+/
+
+DESC JURIDICA
+
+--Criar a tabela PES_FISICA com base no tipo FISICAS 
+CREATE TABLE pes_fisica OF fisicas
+
+Tabela Criada
+
+ALTER TABLE pes_fisica
+ADD CONSTRAINT pes_fisica_pk PRIMARY KEY (cdcpf);
+Tabela Alterada
+
+-- Inserir registros
+INSERT INto pes_fisica
+VALUES (1, 'Karina', 18518788810, 'F');
+Linha criada
+
+SELECT * FROM pes_fisica;
+
+-- Juridica
+
+--Execercicio 
+--Criar a tabela PES_JURIDICA com base no tipo JURIDICAS
+--Alterar a tabela colocando chave primaria na coluna cnpj
+--Inserir um registro
+--Consultar o registro inserido.
+
+--Criar a tabela PES_FISICA com base no tipo FISICAS
+CREATE TABLE pes_juridica OF juridica
+
+Tabela Criada
+
+ALTER TABLE pes_juridica
+ADD CONSTRAINT pes_juridica_pk PRIMARY KEY (cdcnpj);
+Tabela Alterada
+
+-- Inserir registros  
+INSERT INto pes_juridica
+VALUES (2, 'Karina', 18518788810, 'Manaus');
+Linha criada
+
+SELECT * FROM pes_juridica;
+
+
+-- Pessoa é um tipo de objeto e nao uma tabela: Pode existir duas cdpessoas, por exemplo e compartilhar o nome.
+
+-- Modelo Conceitual
+
+               _ Logradoyro
+              |- Numero      
+-- Endereco   |- Bairro
+              |- CEP
+
+ALUNO -€ ENDERECO (Tabela Alinhada)
+
+/* TABELAS ANINHADAS
+TABELAS com colunas com tipo de dado de dominio como outra tabela.
+Criar a tabela aninhada (coluna) chamada t_ende */
+CREATE OR REPLACE TYPE t_ende AS OBJECT
+(logradouro VARCHAR(60),
+numero      Integer,
+bairro      VARCHAR(50),
+cidade      VARCHAR(50),
+uf          CHAR(2),
+cep         CHAR(9));
+/
+Tipo Criado
+--Criar um tipo de dado coluna chamado lista_ende
+--Com base na tabela aninhada t_ene
+CREATE TYPE lista_ende AS TABLE OF t_ende;
+/
+Tipo Criado.
+
+-- Criar um array: 
+-- Exemplo: Telefone(1 ou varios) -> Cria um Array
+-- Atributos de uma tabela, ou relacionamentos em uma tabela.
+-- [| | | |]
+
+-- Criar a tabela CLIENTE com os tipos COMPOSTOS e ARRAY
+CREATE TABLE cliente
+(codigo INTEGER PRIMARY KEY,
+ nome VARCHAR(30) NOT NULL,
+ telefone TELE, 
+ ende_cliente LISTA_ENDE)
+ NESTED TABLE ende_cliente STORE AS TAB_ENDERECO_CLIENTE;
+
+TABELA CRIADA
+DESC cliente
+
+

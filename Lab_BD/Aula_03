@@ -1,0 +1,48 @@
+-- Subconsultas Simples
+-- Exibir o salaro de quem ganha igual ao salario do Abel.
+-- a) Qual salario do Abel?
+SELECT salary FROM employees WHERE last_name = 'Abel';
+SELECT last_name, salary FROM employees WHERE salary = (SELECT salary FROM employees WHERE last_name='Abel');
+--Quando compara, compara com o que tem o mesmo conteudo(Salario nunca sera igual um nome)
+-- Alterar para exibir qum ganha mais do ue o Abel
+SELECT last_name, salary FROM employees WHERE salary > (SELECT salary FROM employees WHERE last_name='Abel');
+-- Aumentar o salario do Abel em 25%
+UPDATE employees SET salary = salary * 1.25 WHERE last_name='Abel';
+
+--Exibir sobrenome, id do cargo e salario de quem tem o mesmo cargo do 141
+--E o salario maior do ue o ID 143.
+SELECT last_name, job_id, salary FROM employees 
+WHERE job_id = (SELECT job_id FROM employees WHERE employee_id = 141)
+AND salary > (SELECT salary FROM employees WHERE employee_id = 143);
+--OBS: Todas são subqueries NÂO-EMPARELHADAS, uma subquerie para cada coluna.
+
+--Exibir o nome, o titulo do cargo e o salario de quem ganha igual ao menor salario da empresa.
+--a) Qua é o menor salário?
+SELECT MIN(salary) FROM employees;
+
+--Exibir o nome, o titulo do cargo e o salario de quem ganha igual ao menor salario da empresa.
+--a) Qua é o menor salário?
+
+SELECT e.first_name, j.job_title, e.salary 
+FROM employees e , jobs j WHERE e.job_id = j.job_id 
+AND e.salary = (SELECT MIN(salary) FROM employees);
+--a)Qual é o menor salario medio
+SELECT job_id, AVG(salary) FROM employees
+GROUP BY job_id
+ORDER BY 2;
+
+-- Função(Função(coluna)
+      |   --------------
+      ----- Parametro para a de fora
+
+SELECT job_id, AVG(salary) FROM employees
+GROUP BY job_id 
+HAVING AVG(salary) = (SELECT MIN(AVG(salary))
+FROM employees
+ORDER BY job_id);
+
+--Exibir a tb do empregado, o id dp departamento e o nome de quem trabalha no mesmo departamento que o empregado com id 123.
+SELECT employee_id, department_id, first_name 
+FROM employee
+WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = 123)
+AND first_name |= 'shanta'; 
